@@ -43,7 +43,7 @@ public class NotificationsFragment extends Fragment implements NetworkAsyncTask.
 
 
     private void executeHttpRequest(){
-        new NetworkAsyncTask(this).execute("https://api.thingspeak.com/channels/1354241/fields/2.json?results=2");
+        new NetworkAsyncTask(this).execute("https://api.thingspeak.com/channels/1354241/fields/2.json?results=1");
     }
 
     @Override

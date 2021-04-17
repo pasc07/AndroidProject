@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.pascal.sensortestapp.HumidityData;
 import com.pascal.sensortestapp.JsonFile;
 import com.pascal.sensortestapp.ui.home.SensorData;
 
@@ -46,5 +47,6 @@ public class JsonDeserialiserForTest {
         }
         return list;
     }
+
 
 }

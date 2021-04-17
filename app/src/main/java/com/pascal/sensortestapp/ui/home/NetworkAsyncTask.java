@@ -30,6 +30,7 @@ public class NetworkAsyncTask extends android.os.AsyncTask<String, Void, String>
         super.onPostExecute(success);
         this.callback.get().onPostExecute(success);
         Log.e("TAG", "AsyncTask is finished.");
+
     }
 
     @Override

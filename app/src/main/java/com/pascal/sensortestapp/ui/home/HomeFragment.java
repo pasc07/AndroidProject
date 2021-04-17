@@ -17,11 +17,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.pascal.sensortestapp.GithubUser;
+import com.pascal.sensortestapp.HumidityData;
 import com.pascal.sensortestapp.R;
 import com.pascal.sensortestapp.getData;
 import com.pascal.sensortestapp.ui.JsonDeserialiserForTest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -77,6 +82,7 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
         * Reconstitution complete de la page html en y ajoutant le end;
          */
         String html=webPage.getWeb()+webPage.getWebEnd();
+
         webView.loadData(html,"text/html","UTF-8");
 
         //graphique numero 2
@@ -146,7 +152,7 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
     // ------------------
 
    private void executeHttpRequest(){
-        new NetworkAsyncTask(this).execute("https://api.github.com/users/JakeWharton/following");
+        new NetworkAsyncTask(this).execute("https://api.thingspeak.com/channels/1354241/fields/2.json?results=1");
     }
 
     @Override
@@ -183,5 +189,24 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
     public void onDestroy() {
         super.onDestroy();
         webView.destroy();
+    }
+
+    public double jsonTest(){
+        String jsonFile="" ;
+        String[] file;
+        double humidity;
+        this.updateUIWhenStopingHTTPRequest(jsonFile);
+        file=jsonFile.split(":");
+        jsonFile=file[2];
+        jsonFile.substring(0, jsonFile.length()-1);
+
+        Gson gson =new Gson();
+        JsonParser parser = new JsonParser();
+        JsonArray array = parser.parse(jsonFile).getAsJsonArray();
+        List<HumidityData> list =new ArrayList<HumidityData>();
+        list.add( gson.fromJson(array.get(0), HumidityData.class));
+        humidity =Double.parseDouble( list.get(0).getField2());
+
+        return humidity;
     }
 }

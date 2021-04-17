@@ -23,7 +23,7 @@ public class WebPage {
                 .append("        ]);\n")
                 .append("\n")
                 .append("        var options = {\n")
-                .append("          title: 'Company Performance',\n")
+                .append("          title: 'Temperature',\n")
                 .append("          hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},\n")
                 .append("          vAxis: {minValue: 0, textPosition:'in'},\n") //Place the text on vAxis 'in'
                // .append("          width: 400 ,\n")
