@@ -35,7 +35,7 @@ public class NotificationsFragment extends Fragment implements NetworkAsyncTask.
                 textView.setText(s);
             }
         });
-        textView2 = root.findViewById(R.id.text_notifications2);
+        textView2 = root.findViewById(R.id.text_notifications);
         getDataNotif =root.findViewById(R.id.getDataNotif);
         getDataNotif.setOnClickListener(this);
         return root;
