@@ -27,5 +27,4 @@ public class getData {
 
         return resistance;
     }
-
 }
