@@ -25,7 +25,7 @@ import com.pascal.sensortestapp.ui.JsonDeserialiserForTest;
 import java.util.Collection;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners, View.OnClickListener, GithubCalls.Callbacks{
+public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners, View.OnClickListener, ApiCalls.Callbacks{
     private TextView textView2 ;
     private Button getData;
     private WebPage webPage =new WebPage();
@@ -60,16 +60,6 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
         //webView.loadUrl("https://google.fr");
         /* Load web page in webView
          */
-/*
-        webPage.setWeb(2017,1500,1900);
-        webPage.setWeb(2018,1534,1600);
-        webPage.setWeb(2019,1500,1300);
-        webPage.setWeb(2020,400,1900);
-        webPage.setWeb(2021,1200,2000);
-        webPage.setWeb(2022,500,900);
-        webPage.setWeb(2023,800,600);
-
- */
         getData data = new getData();
 
         double[] resistance = data.getResistance();
@@ -80,10 +70,12 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
                 /**
                  * J'ai augmenter la dynamique
                  */
-                webPage.setWeb(2017 + i + 1, resistance[i]/10000 -940, resistance[i]/10000 -900);
+                webPage.setWeb("abscisse", resistance[i]/10000 -940, resistance[i]/10000 -900);
             }
         }
-
+        /*
+        * Reconstitution complete de la page html en y ajoutant le end;
+         */
         String html=webPage.getWeb()+webPage.getWebEnd();
         webView.loadData(html,"text/html","UTF-8");
 
@@ -109,7 +101,7 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
     // 4 - Execute HTTP request and update UI
     private void executeHttpRequestWithRetrofit(){
         this.updateUIWhenStartingHTTPRequest();
-        GithubCalls.fetchUserFollowing(this, "JakeWharton");
+        ApiCalls.fetchUserFollowing((ApiCalls.Callbacks) this, "JakeWharton");
     }
 
     // 2 - Override callback methods

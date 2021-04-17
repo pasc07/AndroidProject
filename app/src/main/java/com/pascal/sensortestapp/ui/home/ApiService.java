@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public interface GithubService {
+public interface ApiService {
     @GET("users/{username}/following")
     Call<List<GithubUser>> getFollowing(@Path("username") String username);
 

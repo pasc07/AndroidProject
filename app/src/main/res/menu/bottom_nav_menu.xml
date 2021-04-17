@@ -7,9 +7,9 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_connect"
         android:icon="@drawable/ic_baseline_signal_wifi_4_bar_24"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_connect" />
 
     <item
         android:id="@+id/navigation_notifications"

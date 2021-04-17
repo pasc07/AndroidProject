@@ -40,12 +40,8 @@ public class WebPage {
         //Empty Constructor
     public WebPage(){}
 
-    public String unPoint(int year, double sales, double expenses){
-        return "    [ '"+year+"',   "+sales+",  "+expenses+"], \n";
-    }
-
-    public void setWeb(int date, double sensor1, double sensor2) {
-        String web1,point=unPoint(date,sensor1,sensor2);
+    public void setWeb(String date, double sensor1, double sensor2) {
+        String web1,point="    [ '"+date+"',   "+sensor1+",  "+sensor2+"], \n";
         web1=this.web+ point;
         this.web = web1;
     }

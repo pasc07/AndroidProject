@@ -6,7 +6,8 @@ import com.google.gson.annotations.SerializedName;
 public class SensorData {
     /* Cette classe represente un objet json au format java. C'est la conversion d'un JSON en JAVA
 
-    //Exemple: En Json
+    //Exemple:
+         //   En Json
             [ {
             "valeur 1": " 10"
             "valeur 2" : "20"
@@ -29,11 +30,8 @@ public class SensorData {
                 string {
 
                 }
-
                 //Setters
-
             }
-
     *
      */
     @SerializedName("#group")

@@ -15,10 +15,13 @@ import java.util.List;
 
 public class JsonDeserialiserForTest {
 
-    /* Cette classe deserialiser les donnees Json en format lisible . Il prend un objet de type JSON et
-    * return un tableau des object json de notre capteur
-
+    /* Cette classe deserialiser les donnees Json en format lisible . Il prend un objet
+    *de type JSON (un fichier texte) et
+    * return un tableau contenant des object json de notre capteur.
+    * Ses objet seront ensuite deserialiser pour
+    * recuprer la valeur de la resistance du capteur.
      */
+
     private List<SensorData> listOfValue ;
     private SensorData valueTest;
     public JsonDeserialiserForTest() {

@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class JsonFile {
+    /*
+    JSON data for test
+     */
     private final String file  ="[\n" +
             "  {\n" +
             "    \"#group\": \"#datatype\",\n" +

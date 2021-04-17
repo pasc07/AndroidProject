@@ -17,7 +17,6 @@ public class getData {
         list =data.dataString();
         for (int j = 3; j < (int) list.size() ; j++) {
             resistance[j]=Double.parseDouble( list.get(j).getFalse3());
-
         }
         i=0;
 

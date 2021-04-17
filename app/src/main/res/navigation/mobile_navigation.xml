@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_connect"
         android:name="com.pascal.sensortestapp.ui.dashboard.DashboardFragment"
         android:label="Connect"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_connect" />
 
     <fragment
         android:id="@+id/navigation_notifications"

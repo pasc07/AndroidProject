@@ -11,7 +11,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class GithubCalls {
+public class ApiCalls {
     // 1 - Creating a callback
     public interface Callbacks {
         void onResponse(@Nullable List<GithubUser> users);
@@ -25,7 +25,7 @@ public class GithubCalls {
         final WeakReference<Callbacks> callbacksWeakReference = new WeakReference<Callbacks>(callbacks);
 
         // 2.2 - Get a Retrofit instance and the related endpoints
-        GithubService gitHubService = GithubService.retrofit.create(GithubService.class);
+        ApiService gitHubService = ApiService.retrofit.create(ApiService.class);
 
         // 2.3 - Create the call on Github API
         Call<List<GithubUser>> call = gitHubService.getFollowing(username);
