@@ -1,11 +1,12 @@
 package com.pascal.sensortestapp.ui.home;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -16,6 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.work.ListenableWorker;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -23,18 +28,18 @@ import com.google.gson.JsonParser;
 import com.pascal.sensortestapp.GithubUser;
 import com.pascal.sensortestapp.HumidityData;
 import com.pascal.sensortestapp.R;
-import com.pascal.sensortestapp.getData;
-import com.pascal.sensortestapp.ui.JsonDeserialiserForTest;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Scheduler;
 
 public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners, View.OnClickListener, ApiCalls.Callbacks{
     private TextView textView2 ;
     private Button getData;
     private WebPage webPage =new WebPage();
-    private WebView webView;
+    public WebView webView;
     private WebView webView2;
 
     private HomeViewModel homeViewModel;
@@ -65,6 +70,8 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
         //webView.loadUrl("https://google.fr");
         /* Load web page in webView
          */
+
+          /*
         getData data = new getData();
 
         double[] resistance = data.getResistance();
@@ -72,22 +79,19 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
 
         for (int i = 0; i < resistance.length; i++) {
             if(resistance[i] >1) {
-                /**
-                 * J'ai augmenter la dynamique
-                 */
+
+                 //* J'ai augmenter la dynamique
+
                 webPage.setWeb("abscisse", resistance[i]/10000 -940, resistance[i]/10000 -900);
             }
         }
-        /*
-        * Reconstitution complete de la page html en y ajoutant le end;
-         */
-        String html=webPage.getWeb()+webPage.getWebEnd();
+        */
+        this.executeHttpRequest();
+        PeriodicWorkRequest fetchData =
+                new PeriodicWorkRequest.Builder(GetDataAsyncTask.class, 1000, TimeUnit.MICROSECONDS)
+                // Constraints
+                .build();
 
-        webView.loadData(html,"text/html","UTF-8");
-
-        //graphique numero 2
-
-        webView2.loadData(html,"text/html","UTF-8");
 
        //test deserialiser
         //JsonDeserialiserForTest test =new JsonDeserialiserForTest();
@@ -95,12 +99,7 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
         TextView textView2 = root.findViewById(R.id.textView2);
         //textView2.setText(text.getFalse3());
 
-        getData=root.findViewById(R.id.getData);
-        getData.setOnClickListener(this);
-
         //--------------------------------------
-
-
         return root;
     }
 
@@ -152,7 +151,9 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
     // ------------------
 
    private void executeHttpRequest(){
-        new NetworkAsyncTask(this).execute("https://api.thingspeak.com/channels/1354241/fields/2.json?results=1");
+
+            new NetworkAsyncTask(this).execute("https://api.thingspeak.com/channels/1354241/fields/2.json?results=1");
+
     }
 
     @Override
@@ -173,17 +174,40 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
     // ------------------
 
     private void updateUIWhenStartingHTTPRequest(){
-        this.textView2.setText("Downloading...");
+       // this.textView2.setText("Downloading...");
     }
 
     private void updateUIWhenStopingHTTPRequest(String response){
-        this.textView2.setText(response);
+        String jsonFile = response;
+        String[] file;
+        double humidity;
+        file = jsonFile.split(",");
+        jsonFile = "";
+        jsonFile=file[file.length-3]+","+file[file.length-2]+","+file[file.length-1];
+        jsonFile=jsonFile.substring(8, jsonFile.length() - 1);
+
+        Gson gson = new Gson();
+        JsonParser parser = new JsonParser();
+        JsonArray array = parser.parse(jsonFile).getAsJsonArray();
+        List<HumidityData> list = new ArrayList<HumidityData>();
+        list.add(gson.fromJson(array.get(0), HumidityData.class));
+        humidity = Double.parseDouble(list.get(0).getField2());
+        //Mis a jour de Web
+        webPage.setWeb("abscisse", humidity, humidity - 3);
+
+        // Reconstitution complete de la page html en y ajoutant la fin
+        String html = webPage.getWeb() + webPage.getWebEnd();
+        //Graph 1 et 2
+        webView.loadData(html, "text/html", "UTF-8");
+       // this.textView2.setText(response);
     }
+
 
     @Override
     public void onClick(View v) {
         this.executeHttpRequestWithRetrofit();
     }
+
 
     @Override
     public void onDestroy() {
@@ -191,22 +215,50 @@ public class HomeFragment extends Fragment implements NetworkAsyncTask.Listeners
         webView.destroy();
     }
 
-    public double jsonTest(){
-        String jsonFile="" ;
-        String[] file;
-        double humidity;
-        this.updateUIWhenStopingHTTPRequest(jsonFile);
-        file=jsonFile.split(":");
-        jsonFile=file[2];
-        jsonFile.substring(0, jsonFile.length()-1);
+//Async Task
+    public class GetDataAsyncTask extends Worker {
+        private WebPage webPage;
+        private WebView webView;
 
-        Gson gson =new Gson();
-        JsonParser parser = new JsonParser();
-        JsonArray array = parser.parse(jsonFile).getAsJsonArray();
-        List<HumidityData> list =new ArrayList<HumidityData>();
-        list.add( gson.fromJson(array.get(0), HumidityData.class));
-        humidity =Double.parseDouble( list.get(0).getField2());
+        public GetDataAsyncTask(
+                @NonNull Context context,
+                @NonNull WorkerParameters workerParams, WebPage webPage) {
+            super(context, workerParams);
+            this.webPage = webPage;
+        }
 
-        return humidity;
+        @NonNull
+        @Override
+        public Result doWork() {
+            jsonTest();
+            return Result.success();
+        }
+
+        public void jsonTest() {
+            String jsonFile = "";
+            String[] file;
+            double humidity;
+            file = jsonFile.split(",");
+            jsonFile = "";
+            jsonFile=file[file.length-3]+","+file[file.length-2]+","+file[file.length-1];
+            jsonFile=jsonFile.substring(8, jsonFile.length() - 1);
+
+            Gson gson = new Gson();
+            JsonParser parser = new JsonParser();
+            JsonArray array = parser.parse(jsonFile).getAsJsonArray();
+            List<HumidityData> list = new ArrayList<HumidityData>();
+            list.add(gson.fromJson(array.get(0), HumidityData.class));
+            humidity = Double.parseDouble(list.get(0).getField2());
+            //Mis a jour de Web
+            webPage.setWeb("abscisse", humidity, humidity - 3);
+
+            // Reconstitution complete de la page html en y ajoutant la fin
+            String html = webPage.getWeb() + webPage.getWebEnd();
+            //Graph 1 et 2
+            webView.loadData(html, "text/html", "UTF-8");
+
+        }
     }
+
+
 }

@@ -1,5 +1,7 @@
 package com.pascal.sensortestapp;
 
+import android.webkit.WebView;
+
 import com.pascal.sensortestapp.ui.JsonDeserialiserForTest;
 import com.pascal.sensortestapp.ui.home.SensorData;
 
@@ -19,7 +21,6 @@ public class getData {
             resistance[j]=Double.parseDouble( list.get(j).getFalse3());
         }
         i=0;
-
     }
 
     public double[] getResistance() {

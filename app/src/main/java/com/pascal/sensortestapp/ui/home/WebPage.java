@@ -1,5 +1,7 @@
 package com.pascal.sensortestapp.ui.home;
 
+import android.webkit.WebView;
+
 public class WebPage {
 
         private String web= new StringBuilder()
